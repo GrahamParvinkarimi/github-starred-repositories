@@ -17,21 +17,30 @@ import javax.inject.Inject
 
 class GitHubServiceImpl @Inject constructor(
     retrofit: Retrofit
-): GitHubService {
+) : GitHubService {
 
     private val api = retrofit.create<GitHubApi>()
 
     interface GitHubApi {
         @GET("search/repositories")
-        suspend fun getRepositoryList(@Query("q") query: String, @Query("per_page") perPage: String): Response<RepositoryListResponse>
+        suspend fun getRepositoryList(
+            @Query("q") query: String,
+            @Query("per_page") perPage: String
+        ): Response<RepositoryListResponse>
 
         @GET("repos/{owner}/{repo}/contributors")
-        suspend fun getRepositoryOwners(@Path("owner") owner: String, @Path("repo") repo: String): Response<List<Owner>>
+        suspend fun getRepositoryOwners(
+            @Path("owner") owner: String,
+            @Path("repo") repo: String
+        ): Response<List<Owner>>
     }
 
     override suspend fun retrieveRepositoryList(): NetworkResult<List<RepositoryInfo>> {
         try {
-            val response = api.getRepositoryList(query = "stars:>0", perPage = "100")
+            val response = api.getRepositoryList(
+                query = NetworkConstants.REPOSITORY_SEARCH_QUERY_PARAM,
+                perPage = NetworkConstants.REPOSITORY_SEARCH_PER_PAGE_PARAM
+            )
             return if (response.isSuccessful && response.body() != null) {
                 NetworkResult.Success(data = response.body()?.mapToDomain())
             } else {
@@ -39,7 +48,9 @@ class GitHubServiceImpl @Inject constructor(
             }
         } catch (e: Exception) {
             println(e)
-            return NetworkResult.Error(errorMessage = e.message ?: NetworkConstants.PARSING_ERROR_TEXT)
+            return NetworkResult.Error(
+                errorMessage = e.message ?: NetworkConstants.PARSING_ERROR_TEXT
+            )
         }
     }
 
@@ -56,7 +67,9 @@ class GitHubServiceImpl @Inject constructor(
             }
         } catch (e: Exception) {
             println(e)
-            return NetworkResult.Error(errorMessage = e.message ?: NetworkConstants.PARSING_ERROR_TEXT)
+            return NetworkResult.Error(
+                errorMessage = e.message ?: NetworkConstants.PARSING_ERROR_TEXT
+            )
         }
     }
 }
