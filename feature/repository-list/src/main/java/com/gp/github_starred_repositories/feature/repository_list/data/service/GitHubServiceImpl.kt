@@ -23,7 +23,7 @@ class GitHubServiceImpl @Inject constructor(
 
     interface GitHubApi {
         @GET("search/repositories")
-        suspend fun getRepositoryList(@Query("q") query: String): Response<RepositoryListResponse>
+        suspend fun getRepositoryList(@Query("q") query: String, @Query("per_page") perPage: String): Response<RepositoryListResponse>
 
         @GET("repos/{owner}/{repo}/contributors")
         suspend fun getRepositoryOwners(@Path("owner") owner: String, @Path("repo") repo: String): Response<List<Owner>>
@@ -31,7 +31,7 @@ class GitHubServiceImpl @Inject constructor(
 
     override suspend fun retrieveRepositoryList(): NetworkResult<List<RepositoryInfo>> {
         try {
-            val response = api.getRepositoryList(query = "stars:>0")
+            val response = api.getRepositoryList(query = "stars:>0", perPage = "100")
             return if (response.isSuccessful && response.body() != null) {
                 NetworkResult.Success(data = response.body()?.mapToDomain())
             } else {

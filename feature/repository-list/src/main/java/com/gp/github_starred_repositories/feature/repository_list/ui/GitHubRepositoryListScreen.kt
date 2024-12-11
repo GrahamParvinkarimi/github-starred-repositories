@@ -37,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.gp.github_starred_repositories.feature.repository_list.R
 import com.gp.github_starred_repositories.feature.repository_list.domain.model.RepositoryInfo
 import com.gp.github_starred_repositories.feature.repository_list.ui.constants.Dimens
+import com.gp.github_starred_repositories.feature.repository_list.util.RepositoryListTextUtils
 import com.gp.github_starred_repositories.feature.repository_list.viewstate.RepositoryListScreenViewState
 import com.gp.github_starred_repositories.feature.repository_list.vm.RepositoryListScreenViewModel
 
@@ -139,7 +140,10 @@ fun RepositoryCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(R.string.repository_title_text, repository.fullName),
+                            text = stringResource(
+                                R.string.repository_title_text,
+                                repository.fullName
+                            ),
                             fontSize = Dimens.font_size_14,
                             color = Color.Black,
                             maxLines = 1,
@@ -147,16 +151,17 @@ fun RepositoryCard(
                         )
                     }
 
-                    if (repository.topContributor?.name != null) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(R.string.top_contributor_text, repository.topContributor.name),
-                                fontSize = Dimens.font_size_12,
-                                color = Color.Gray
-                            )
-                        }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.top_contributor_text,
+                                RepositoryListTextUtils.getRepositoryOwnerName(repository)
+                            ),
+                            fontSize = Dimens.font_size_12,
+                            color = Color.Gray
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(Dimens.padding_8))

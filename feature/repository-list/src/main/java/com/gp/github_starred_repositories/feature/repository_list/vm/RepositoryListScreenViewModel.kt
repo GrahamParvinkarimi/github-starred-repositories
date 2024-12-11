@@ -3,10 +3,11 @@ package com.gp.github_starred_repositories.feature.repository_list.vm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gp.github_starred_repositories.feature.repository_list.data.service.GitHubService
-import com.gp.github_starred_repositories.feature.repository_list.domain.model.RepositoryInfo
 import com.gp.github_starred_repositories.feature.repository_list.domain.model.base.NetworkResult
 import com.gp.github_starred_repositories.feature.repository_list.viewstate.RepositoryListScreenViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -32,15 +33,20 @@ class RepositoryListScreenViewModel @Inject constructor(
 
         viewModelScope.launch {
             val repoListResult = gitHubService.retrieveRepositoryList()
-            val finalList = mutableListOf<RepositoryInfo>()
 
             if (repoListResult is NetworkResult.Success && repoListResult.data != null) {
-                for (repo in repoListResult.data) {
-                    val ownerResult = gitHubService.retrieveContributors(repo.ownerName, repo.name)
-                    if (ownerResult is NetworkResult.Success && ownerResult.data != null) {
-                        finalList.add(repo.copy(topContributor = ownerResult.data))
-                    }
-                }
+                // Launch the contributor calls for the top 100 repositories concurrently and wait for the result
+                val finalList = repoListResult.data.map { repo ->
+                        async {
+                            val ownerResult = gitHubService.retrieveContributors(repo.ownerName, repo.name)
+                            if (ownerResult is NetworkResult.Success && ownerResult.data != null) {
+                                repo.copy(topContributor = ownerResult.data)
+                            } else {
+                                repo // Return the repo without a top contributor if the call fails
+                            }
+                        }
+                    }.awaitAll()
+
                 _repositoryListScreenViewState.value =
                     RepositoryListScreenViewState.Success(finalList.toList())
             } else {
