@@ -21,7 +21,7 @@ class GitHubNetworkModule {
             .addInterceptor { chain ->
                 val original = chain.request()
                 val request: Request = original.newBuilder()
-                    //.header("Authorization", "Bearer {Add your GH Auth Token here to avoid rate limits})")
+                    //.header("Authorization", "Bearer {Add your GH Auth Token here to avoid rate limits}")
                     .header("User-Agent", "request")
                     .method(original.method, original.body)
                     .build()
