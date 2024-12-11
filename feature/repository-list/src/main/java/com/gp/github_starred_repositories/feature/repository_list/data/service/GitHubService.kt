@@ -6,5 +6,5 @@ import com.gp.github_starred_repositories.feature.repository_list.domain.model.b
 
 interface GitHubService {
     suspend fun retrieveRepositoryList(): NetworkResult<List<RepositoryInfo>>
-    suspend fun retrieveContributors(owner: Long, repo: Long): NetworkResult<Contributor>
+    suspend fun retrieveContributors(owner: String, repo: String): NetworkResult<Contributor>
 }

@@ -26,7 +26,7 @@ class GitHubServiceImpl @Inject constructor(
         suspend fun getRepositoryList(@Query("q") query: String): Response<RepositoryListResponse>
 
         @GET("repos/{owner}/{repo}/contributors")
-        suspend fun getRepositoryOwners(@Path("owner") owner: Long, @Path("repo") repo: Long): Response<List<Owner>>
+        suspend fun getRepositoryOwners(@Path("owner") owner: String, @Path("repo") repo: String): Response<List<Owner>>
     }
 
     override suspend fun retrieveRepositoryList(): NetworkResult<List<RepositoryInfo>> {
@@ -44,8 +44,8 @@ class GitHubServiceImpl @Inject constructor(
     }
 
     override suspend fun retrieveContributors(
-        owner: Long,
-        repo: Long
+        owner: String,
+        repo: String
     ): NetworkResult<Contributor> {
         try {
             val response = api.getRepositoryOwners(owner = owner, repo = repo)

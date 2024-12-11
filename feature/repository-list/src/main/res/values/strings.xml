@@ -1,0 +1,8 @@
+<resources>
+    <string name="default_network_error_message">There was an issue loading the content, please make sure that you have a strong network connection and try again.</string>
+    <string name="repository_icon_content_description">Repository Icon</string>
+    <string name="repository_title_text">Repository: %1$s</string>
+    <string name="top_contributor_text">Top Contributor: %1$s</string>
+    <string name="error_icon_content_description">Error Icon</string>
+    <string name="retry_text">Retry</string>
+</resources>

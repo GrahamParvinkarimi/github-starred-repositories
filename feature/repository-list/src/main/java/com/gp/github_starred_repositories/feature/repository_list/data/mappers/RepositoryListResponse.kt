@@ -134,7 +134,9 @@ data class License(
 fun RepositoryListResponse.mapToDomain(): List<RepositoryInfo> {
     return this.items.map {
         RepositoryInfo(
-            name = it.fullName
+            name = it.name,
+            ownerName = it.owner.login,
+            fullName = it.fullName
         )
     }
 }
